@@ -4,14 +4,14 @@ import cz.cvut.fel.pjv.arimaa.model.Color;
 
 public abstract class Figure {
     private int x;
-    private int Y;
+    private int y;
     private final Color figureColor;
     private final int strength;
     private boolean isFrozen;
 
     public Figure(int x, int y, Color figureColor, int strength) {
         this.x = x;
-        this.Y = y;
+        this.y = y;
         this.figureColor = figureColor;
         this.strength = strength;
         this.isFrozen = false;
@@ -22,7 +22,7 @@ public abstract class Figure {
     }
 
     public int getY() {
-        return Y;
+        return y;
     }
 
     public void setX(int x) {
@@ -30,7 +30,7 @@ public abstract class Figure {
     }
 
     public void setY(int y) {
-        Y = y;
+        this.y = y;
     }
 
     public boolean isFrozen() {
