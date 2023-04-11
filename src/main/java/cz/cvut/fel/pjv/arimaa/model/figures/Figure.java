@@ -1,36 +1,28 @@
 package cz.cvut.fel.pjv.arimaa.model.figures;
 
 import cz.cvut.fel.pjv.arimaa.model.Color;
+import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
 public abstract class Figure {
-    private int x;
-    private int y;
+    private Tile tile;
     private final Color figureColor;
     private final int strength;
     private boolean isFrozen;
 
-    public Figure(int x, int y, Color figureColor, int strength) {
-        this.x = x;
-        this.y = y;
+    public Figure(Tile tile, Color figureColor, int strength) {
+        this.tile = tile;
+        tile.setFigure(this);
         this.figureColor = figureColor;
         this.strength = strength;
         this.isFrozen = false;
     }
 
-    public int getX() {
-        return x;
+    public Tile getTile() {
+        return tile;
     }
 
-    public int getY() {
-        return y;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+    public void setTile(Tile tile) {
+        this.tile = tile;
     }
 
     public boolean isFrozen() {
@@ -47,9 +39,5 @@ public abstract class Figure {
 
     public int getStrength() {
         return strength;
-    }
-
-    public int[] getCoordinates() {
-        return new int[]{getX(), getY()};
     }
 }
