@@ -28,4 +28,10 @@ public abstract class Tile {
     public void setFigure(Figure figure) {
         this.figure = figure;
     }
+
+    public Tile[] getAdjacentTiles(){
+        //TODO
+        //returns all adjacent tiles to this tile
+        return null;
+    }
 }

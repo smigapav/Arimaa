@@ -4,4 +4,10 @@ public class Trap extends Tile{
     public Trap(int x, int y) {
         super(x, y);
     }
+
+    public boolean isDead(){
+        //TODO
+        //returns if figure on this tile should be dead or not
+        return false;
+    }
 }
