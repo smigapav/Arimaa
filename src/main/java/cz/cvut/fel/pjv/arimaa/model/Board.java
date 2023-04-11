@@ -27,4 +27,14 @@ public class Board {
     public Tile[][] getTiles() {
         return tiles;
     }
+
+    public boolean isWinner(){
+        //TODO
+        return false;
+    }
+
+    public Color getWinner(){
+        //TODO
+        return null;
+    }
 }

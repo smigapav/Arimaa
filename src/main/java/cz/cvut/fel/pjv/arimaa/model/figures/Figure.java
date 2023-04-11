@@ -40,4 +40,16 @@ public abstract class Figure {
     public int getStrength() {
         return strength;
     }
+
+    public void move(Tile tile){
+        //TODO
+    }
+
+    public void push(Tile tile){
+        //TODO
+    }
+
+    public void pull(Tile tile){
+        //TODO
+    }
 }

@@ -20,4 +20,8 @@ public class Player {
     public void setTime(int time) {
         this.time = time;
     }
+
+    public void endTurn(){
+        //TODO
+    }
 }
