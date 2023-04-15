@@ -4,25 +4,14 @@ import cz.cvut.fel.pjv.arimaa.model.Color;
 import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
 public abstract class Figure {
-    private Tile tile;
     private final Color figureColor;
     private final int strength;
     private boolean isFrozen;
 
-    public Figure(Tile tile, Color figureColor, int strength) {
-        this.tile = tile;
-        tile.setFigure(this);
+    public Figure(Color figureColor, int strength) {
         this.figureColor = figureColor;
         this.strength = strength;
         this.isFrozen = false;
-    }
-
-    public Tile getTile() {
-        return tile;
-    }
-
-    public void setTile(Tile tile) {
-        this.tile = tile;
     }
 
     public boolean isFrozen() {

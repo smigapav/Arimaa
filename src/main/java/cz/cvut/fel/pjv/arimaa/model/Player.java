@@ -7,11 +7,13 @@ public class Player {
     private final Color playerColor;
     private int time;
     private int movesLeft;
+    private final Board board;
 
-    public Player(Color playerColor, int time) {
+    public Player(Color playerColor, int time, Board board) {
         this.playerColor = playerColor;
         this.time = time;
         this.movesLeft = 4;
+        this.board = board;
     }
 
     public Color getPlayerColor() {

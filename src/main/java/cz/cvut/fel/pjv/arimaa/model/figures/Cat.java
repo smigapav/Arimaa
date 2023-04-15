@@ -4,7 +4,7 @@ import cz.cvut.fel.pjv.arimaa.model.Color;
 import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
 public class Cat extends Figure {
-    public Cat(Tile tile, Color figureColor) {
-        super(tile, figureColor, 2);
+    public Cat(Color figureColor) {
+        super(figureColor, 2);
     }
 }

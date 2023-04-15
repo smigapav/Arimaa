@@ -1,31 +1,17 @@
 package cz.cvut.fel.pjv.arimaa.model;
 
-import cz.cvut.fel.pjv.arimaa.model.tiles.NormalTile;
-import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
-import cz.cvut.fel.pjv.arimaa.model.tiles.Trap;
+import cz.cvut.fel.pjv.arimaa.model.figures.*;
 
 public class Board {
-    private final Tile[][] tiles;
+    private final Figure[][] board;
 
     public Board() {
-        tiles = new Tile[8][8];
-
-        // Create NormalTile objects for all tiles
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                tiles[i][j] = new NormalTile(i, j);
+        board = new Figure[8][8];
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                board[row][col] = null;
             }
         }
-
-        // Create Trap objects for the specified locations
-        tiles[3][3] = new Trap(3, 3);
-        tiles[3][6] = new Trap(3, 6);
-        tiles[6][3] = new Trap(6, 3);
-        tiles[6][6] = new Trap(6, 6);
-    }
-
-    public Tile[][] getTiles() {
-        return tiles;
     }
 
     public boolean isWinner(){
@@ -36,5 +22,53 @@ public class Board {
     public Color getWinner(){
         //TODO
         return null;
+    }
+
+    public boolean placeElephant(int x, int y, Color color){
+        if (board[y][x] == null){
+            board[y][x] = new Elephant(color);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean placeCamel(int x, int y, Color color){
+        if (board[y][x] == null){
+            board[y][x] = new Camel(color);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean placeHorse(int x, int y, Color color){
+        if (board[y][x] == null){
+            board[y][x] = new Horse(color);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean placeDog(int x, int y, Color color){
+        if (board[y][x] == null){
+            board[y][x] = new Dog(color);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean placeCat(int x, int y, Color color){
+        if (board[y][x] == null){
+            board[y][x] = new Cat(color);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean placeRabbit(int x, int y, Color color){
+        if (board[y][x] == null){
+            board[y][x] = new Rabbit(color);
+            return true;
+        }
+        return false;
     }
 }
