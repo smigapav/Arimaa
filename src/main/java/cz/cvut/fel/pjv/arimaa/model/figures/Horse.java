@@ -1,12 +1,11 @@
 package cz.cvut.fel.pjv.arimaa.model.figures;
 
 import cz.cvut.fel.pjv.arimaa.model.Board;
-import cz.cvut.fel.pjv.arimaa.model.Color;
-import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
+import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 
 public class Horse extends Figure {
-    public Horse(Color figureColor, Board board, int row, int col) {
-        super(figureColor, 4, board, row, col);
+    public Horse(PlayerColor figurePlayerColor, Board board, int row, int col) {
+        super(figurePlayerColor, 3, board, row, col);
     }
 
     @Override

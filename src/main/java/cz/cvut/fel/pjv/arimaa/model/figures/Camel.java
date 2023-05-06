@@ -1,12 +1,11 @@
 package cz.cvut.fel.pjv.arimaa.model.figures;
 
 import cz.cvut.fel.pjv.arimaa.model.Board;
-import cz.cvut.fel.pjv.arimaa.model.Color;
-import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
+import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 
 public class Camel extends Figure {
-    public Camel(Color figureColor, Board board, int row, int col) {
-        super(figureColor, 5, board, row, col);
+    public Camel(PlayerColor figurePlayerColor, Board board, int row, int col) {
+        super(figurePlayerColor, 4, board, row, col);
     }
 
     @Override

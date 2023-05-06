@@ -1,20 +1,20 @@
 package cz.cvut.fel.pjv.arimaa.model.figures;
 
 import cz.cvut.fel.pjv.arimaa.model.Board;
-import cz.cvut.fel.pjv.arimaa.model.Color;
+import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 import cz.cvut.fel.pjv.arimaa.model.Directions;
 import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
 public abstract class Figure {
-    private final Color figureColor;
+    private final PlayerColor figurePlayerColor;
     private final int strength;
     private boolean isFrozen;
     private final Board board;
     private int row;
     private int col;
 
-    public Figure(Color figureColor, int strength, Board board, int row, int col) {
-        this.figureColor = figureColor;
+    public Figure(PlayerColor figurePlayerColor, int strength, Board board, int row, int col) {
+        this.figurePlayerColor = figurePlayerColor;
         this.strength = strength;
         this.isFrozen = false;
         this.board = board;
@@ -30,8 +30,8 @@ public abstract class Figure {
         isFrozen = frozen;
     }
 
-    public Color getFigureColor() {
-        return figureColor;
+    public PlayerColor getFigureColor() {
+        return figurePlayerColor;
     }
 
     public int getStrength() {
