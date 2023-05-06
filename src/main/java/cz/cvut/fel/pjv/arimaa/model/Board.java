@@ -4,8 +4,8 @@ import cz.cvut.fel.pjv.arimaa.model.figures.*;
 
 public class Board {
     private final Figure[][] board;
-    private Player goldPlayer;
-    private Player silverPlayer;
+    private final Player goldPlayer;
+    private final Player silverPlayer;
 
     public Board() {
         board = new Figure[8][8];
@@ -14,7 +14,8 @@ public class Board {
                 board[row][col] = null;
             }
         }
-
+        goldPlayer = new Player(PlayerColor.GOLD, this);
+        silverPlayer = new Player(PlayerColor.SILVER, this);
     }
 
     @Override
@@ -33,67 +34,67 @@ public class Board {
         return board;
     }
 
+    public Player getGoldPlayer() {
+        return goldPlayer;
+    }
+
+    public Player getSilverPlayer() {
+        return silverPlayer;
+    }
+
     public boolean isWinner(){
         //TODO
         return false;
     }
 
-    public Color getWinner(){
+    public PlayerColor getWinner(){
         //TODO
         return null;
     }
 
-    public void setGoldPlayer(Player player){
-        this.goldPlayer = player;
-    }
-
-    public void setSilverPlayer(Player player){
-        this.silverPlayer = player;
-    }
-
-    public boolean placeElephant(int col, int row, Color color){
+    public boolean placeElephant(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
-            board[row][col] = new Elephant(color, this, row, col);
+            board[row][col] = new Elephant(playerColor, this, row, col);
             return true;
         }
         return false;
     }
 
-    public boolean placeCamel(int col, int row, Color color){
+    public boolean placeCamel(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
-            board[row][col] = new Camel(color, this, row, col);
+            board[row][col] = new Camel(playerColor, this, row, col);
             return true;
         }
         return false;
     }
 
-    public boolean placeHorse(int col, int row, Color color){
+    public boolean placeHorse(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
-            board[row][col] = new Horse(color, this, row, col);
+            board[row][col] = new Horse(playerColor, this, row, col);
             return true;
         }
         return false;
     }
 
-    public boolean placeDog(int col, int row, Color color){
+    public boolean placeDog(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
-            board[row][col] = new Dog(color, this, row, col);
+            board[row][col] = new Dog(playerColor, this, row, col);
             return true;
         }
         return false;
     }
 
-    public boolean placeCat(int col, int row, Color color){
+    public boolean placeCat(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
-            board[row][col] = new Cat(color, this, row, col);
+            board[row][col] = new Cat(playerColor, this, row, col);
             return true;
         }
         return false;
     }
 
-    public boolean placeRabbit(int col, int row, Color color){
+    public boolean placeRabbit(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
-            board[row][col] = new Rabbit(color, this, row, col);
+            board[row][col] = new Rabbit(playerColor, this, row, col);
             return true;
         }
         return false;

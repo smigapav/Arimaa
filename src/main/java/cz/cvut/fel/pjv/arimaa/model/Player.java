@@ -1,13 +1,11 @@
 package cz.cvut.fel.pjv.arimaa.model;
 
 import cz.cvut.fel.pjv.arimaa.model.figures.Figure;
-import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
-import java.sql.Array;
 import java.util.ArrayList;
 
 public class Player {
-    private final Color playerColor;
+    private final PlayerColor playerColor;
     private int time;
     private int movesLeft;
     private final Board board;
@@ -18,7 +16,7 @@ public class Player {
     private int cats;
     private int rabbits;
 
-    public Player(Color playerColor, Board board) {
+    public Player(PlayerColor playerColor, Board board) {
         this.playerColor = playerColor;
         this.time = 0;
         this.movesLeft = 4;
@@ -31,7 +29,7 @@ public class Player {
         this.rabbits = 0;
     }
 
-    public Color getPlayerColor() {
+    public PlayerColor getPlayerColor() {
         return playerColor;
     }
 
@@ -62,7 +60,7 @@ public class Player {
     }
 
     public void placeFigure(int row, int col){
-        if ((this.playerColor == Color.GOLD && row != 0 && row != 1) || (this.playerColor == Color.SILVER && row != 6 && row != 7)){
+        if ((this.playerColor == PlayerColor.GOLD && row != 0 && row != 1) || (this.playerColor == PlayerColor.SILVER && row != 6 && row != 7)){
             return;
         }
         if (elephants < 1){
