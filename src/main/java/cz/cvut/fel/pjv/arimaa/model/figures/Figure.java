@@ -34,6 +34,15 @@ public abstract class Figure {
         return figurePlayerColor;
     }
 
+    public int getColorForGUI() {
+        if (figurePlayerColor == PlayerColor.GOLD){
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+
     public int getStrength() {
         return strength;
     }
@@ -46,6 +55,14 @@ public abstract class Figure {
         return col;
     }
 
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
+    }
+
     public Board getBoard() {
         return board;
     }
@@ -55,7 +72,7 @@ public abstract class Figure {
         if ((direction.equals(Directions.UP) && this.row == 7) ||
             (direction.equals(Directions.DOWN) && this.row == 0) ||
             (direction.equals(Directions.LEFT) && this.col == 0) ||
-            (direction.equals(Directions.RIGHT) && this.row == 7)){
+            (direction.equals(Directions.RIGHT) && this.col == 7)){
             return false;
         }
         // check if the new position is empty
