@@ -47,18 +47,17 @@ public class Player {
     }
 
     public ArrayList<Figure> getAvailablePieces(){
-        //TODO
         ArrayList<Figure> figures = new ArrayList<>();
         for (Figure[] row : this.board.getBoard()) {
             for (Figure figure : row) {
+                // add all friendly figures that are not frozen
                 if (figure != null && figure.getFigureColor().equals(this.playerColor) && !figure.getIsFrozen()) {
                     figures.add(figure);
                 }
-            }
-        }
-        for (Figure figure : this.board.getCanBePulled()) {
-            if (figure.getFigureColor().equals(this.playerColor)) {
-                figures.add(figure);
+                // add all enemy figures that can be pushed
+                else if (figure != null && !figure.getFigureColor().equals(this.playerColor) && figure.canBePushed()) {
+                    figures.add(figure);
+                }
             }
         }
         return figures;
