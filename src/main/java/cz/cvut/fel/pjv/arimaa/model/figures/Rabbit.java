@@ -69,4 +69,8 @@ public class Rabbit extends Figure {
         }
         return false;
     }
+
+    public boolean pushPull(Directions direction){
+        return super.move(direction);
+    }
 }
