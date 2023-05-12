@@ -25,7 +25,7 @@ public abstract class Figure {
         this.col = col;
     }
 
-    public boolean isFrozen() {
+    public boolean getIsFrozen() {
         return isFrozen;
     }
 
@@ -70,6 +70,7 @@ public abstract class Figure {
         return board;
     }
 
+    // returns all figures on adjacent tiles from this one
     public List<Figure> getAdjacentFigures() {
         List<Figure> out = new ArrayList<>();
         for (int i = 0; i < 8; i++){
@@ -85,6 +86,7 @@ public abstract class Figure {
         return out;
     }
 
+    // Checks if the figure on input is the same color as this one
     public boolean isFigureSameColor(Figure figure) {
         if (this.figurePlayerColor == figure.getFigureColor()){
             return true;
@@ -93,6 +95,7 @@ public abstract class Figure {
         }
     }
 
+    // Returns only adjacent figures that aren't the same color as this one
     public List<Figure> getAdjacentEnemyFigures() {
         List<Figure> out = new ArrayList<>();
         for (Figure figure : getAdjacentFigures()) {
@@ -103,6 +106,7 @@ public abstract class Figure {
         return out;
     }
 
+    // Returns only adjacent figures that are the same color as this one
     public List<Figure> getAdjacentFriendlyFigures() {
         List<Figure> out = new ArrayList<>();
         for (Figure figure : getAdjacentFigures()) {
@@ -113,7 +117,55 @@ public abstract class Figure {
         return out;
     }
 
+    // After each move, the pull pool is updated
+    public void alterPullPool(){
+        List<Figure> out = new ArrayList<>();
+        List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
+        for (Figure figure : adjacentEnemyFigures) {
+            if (figure.isStronger(this)){
+                out.add(figure);
+            }
+        }
+        board.setCanBePulled(out);
+    }
+
+    // Checks if this figure is stronger than the input one
+    public boolean isStronger(Figure figure){
+        return this.strength > figure.strength;
+    }
+
+    // Updates isFrozen for all figures on the board
+    public void checkIfFrozenForAllTiles(){
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                Figure tile = this.board.getBoard()[i][j];
+                if (tile != null){
+                    tile.checkIfFrozen();
+                }
+            }
+        }
+    }
+
+    // Checks if this figure is frozen
+    public void checkIfFrozen(){
+        List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
+        if (adjacentEnemyFigures.size() > 0){
+            for (Figure figure : adjacentEnemyFigures) {
+                if (figure.isStronger(this)){
+                    this.setFrozen(true);
+                    return;
+                }
+            }
+        }
+        this.setFrozen(false);
+    }
+
     public boolean move(Directions direction){
+        boolean out = false;
+        // check if the figure is frozen
+        if (this.isFrozen){
+            return false;
+        }
         // check if the new position is within the bounds of the board
         if ((direction.equals(Directions.UP) && this.row == 7) ||
             (direction.equals(Directions.DOWN) && this.row == 0) ||
@@ -126,50 +178,43 @@ public abstract class Figure {
         switch (direction) {
             case UP -> {
                 if (this.board.getBoard()[this.row+1][this.col] == null) {
+                    this.alterPullPool();
                     board.getBoard()[this.row+1][this.col] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.row = this.row + 1;
-                    board.checkTraps();
-                    return true;
+                    out = true;
                 }
             }
             case DOWN -> {
                 if (this.board.getBoard()[this.row-1][this.col] == null) {
+                    this.alterPullPool();
                     board.getBoard()[this.row-1][this.col] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.row = this.row - 1;
-                    board.checkTraps();
-                    return true;
+                    out = true;
                 }
             }
             case RIGHT -> {
                 if (this.board.getBoard()[this.row][this.col+1] == null) {
+                    this.alterPullPool();
                     board.getBoard()[this.row][this.col+1] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.col = this.col + 1;
-                    board.checkTraps();
-                    return true;
+                    out = true;
                 }
             }
             case LEFT -> {
                 if (this.board.getBoard()[this.row][this.col-1] == null) {
+                    this.alterPullPool();
                     board.getBoard()[this.row][this.col-1] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.col = this.col - 1;
-                    board.checkTraps();
-                    return true;
+                    out = true;
                 }
             }
         }
         board.checkTraps();
-        return false;
-    }
-
-    public void push(Tile tile){
-        //TODO
-    }
-
-    public void pull(Tile tile){
-        //TODO
+        this.checkIfFrozenForAllTiles();
+        return out;
     }
 }

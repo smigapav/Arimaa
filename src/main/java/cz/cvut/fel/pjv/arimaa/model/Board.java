@@ -56,6 +56,14 @@ public class Board {
         return null;
     }
 
+    public List<Figure> getCanBePulled() {
+        return canBePulled;
+    }
+
+    public void setCanBePulled(List<Figure> canBePulled) {
+        this.canBePulled = canBePulled;
+    }
+
     public void checkTraps(){
         Figure[] tiles = {board[2][2], board[2][5], board[5][2], board[5][5]};
         for (Figure tile : tiles) {

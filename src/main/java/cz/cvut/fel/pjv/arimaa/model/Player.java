@@ -51,9 +51,14 @@ public class Player {
         ArrayList<Figure> figures = new ArrayList<>();
         for (Figure[] row : this.board.getBoard()) {
             for (Figure figure : row) {
-                if (figure != null && figure.getFigureColor().equals(this.playerColor)) {
+                if (figure != null && figure.getFigureColor().equals(this.playerColor) && !figure.getIsFrozen()) {
                     figures.add(figure);
                 }
+            }
+        }
+        for (Figure figure : this.board.getCanBePulled()) {
+            if (figure.getFigureColor().equals(this.playerColor)) {
+                figures.add(figure);
             }
         }
         return figures;
