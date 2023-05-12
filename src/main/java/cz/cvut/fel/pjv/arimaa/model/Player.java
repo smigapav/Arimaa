@@ -68,7 +68,7 @@ public class Player {
                 this.elephants++;
             }
         }
-        if (camels < 2){
+        if (camels < 1){
             if (board.placeCamel(col, row, this.playerColor)){
                 this.camels++;
             }
