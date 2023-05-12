@@ -5,6 +5,9 @@ import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 import cz.cvut.fel.pjv.arimaa.model.Directions;
 import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Figure {
     private final PlayerColor figurePlayerColor;
     private final int strength;
@@ -67,6 +70,49 @@ public abstract class Figure {
         return board;
     }
 
+    public List<Figure> getAdjacentFigures() {
+        List<Figure> out = new ArrayList<>();
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                Figure tile = this.board.getBoard()[i][j];
+                if ((i + 1 == this.row || i - 1 == this.row) && j == this.col && tile != null) {
+                    out.add(tile);
+                } else if ((j + 1 == this.col || j - 1 == this.col) && i == this.row && tile != null) {
+                    out.add(tile);
+                }
+            }
+        }
+        return out;
+    }
+
+    public boolean isFigureSameColor(Figure figure) {
+        if (this.figurePlayerColor == figure.getFigureColor()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public List<Figure> getAdjacentEnemyFigures() {
+        List<Figure> out = new ArrayList<>();
+        for (Figure figure : getAdjacentFigures()) {
+            if (!this.isFigureSameColor(figure)){
+                out.add(figure);
+            }
+        }
+        return out;
+    }
+
+    public List<Figure> getAdjacentFriendlyFigures() {
+        List<Figure> out = new ArrayList<>();
+        for (Figure figure : getAdjacentFigures()) {
+            if (this.isFigureSameColor(figure)){
+                out.add(figure);
+            }
+        }
+        return out;
+    }
+
     public boolean move(Directions direction){
         // check if the new position is within the bounds of the board
         if ((direction.equals(Directions.UP) && this.row == 7) ||
@@ -83,6 +129,7 @@ public abstract class Figure {
                     board.getBoard()[this.row+1][this.col] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.row = this.row + 1;
+                    board.checkTraps();
                     return true;
                 }
             }
@@ -91,6 +138,7 @@ public abstract class Figure {
                     board.getBoard()[this.row-1][this.col] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.row = this.row - 1;
+                    board.checkTraps();
                     return true;
                 }
             }
@@ -99,6 +147,7 @@ public abstract class Figure {
                     board.getBoard()[this.row][this.col+1] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.col = this.col + 1;
+                    board.checkTraps();
                     return true;
                 }
             }
@@ -107,10 +156,12 @@ public abstract class Figure {
                     board.getBoard()[this.row][this.col-1] = this;
                     board.getBoard()[this.row][this.col] = null;
                     this.col = this.col - 1;
+                    board.checkTraps();
                     return true;
                 }
             }
         }
+        board.checkTraps();
         return false;
     }
 

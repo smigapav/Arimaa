@@ -2,10 +2,14 @@ package cz.cvut.fel.pjv.arimaa.model;
 
 import cz.cvut.fel.pjv.arimaa.model.figures.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Board {
     private final Figure[][] board;
     private final Player goldPlayer;
     private final Player silverPlayer;
+    private List<Figure> canBePulled = new ArrayList<>();
 
     public Board() {
         board = new Figure[8][8];
@@ -50,6 +54,15 @@ public class Board {
     public PlayerColor getWinner(){
         //TODO
         return null;
+    }
+
+    public void checkTraps(){
+        Figure[] tiles = {board[2][2], board[2][5], board[5][2], board[5][5]};
+        for (Figure tile : tiles) {
+            if (tile != null && tile.getAdjacentFriendlyFigures().size() == 0){
+                board[tile.getRow()][tile.getCol()] = null;
+            }
+        }
     }
 
     public boolean placeElephant(int col, int row, PlayerColor playerColor){
