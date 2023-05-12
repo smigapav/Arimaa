@@ -129,6 +129,17 @@ public abstract class Figure {
         board.setCanBePulled(out);
     }
 
+    public boolean canBePushed(){
+        List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
+        for (Figure figure : adjacentEnemyFigures) {
+            if (figure.isStronger(this)){
+                return true;
+            }
+        }
+        return false;
+        // TODO: next move has to push
+    }
+
     // Checks if this figure is stronger than the input one
     public boolean isStronger(Figure figure){
         return this.strength > figure.strength;
