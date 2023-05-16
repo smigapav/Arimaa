@@ -10,6 +10,10 @@ public class Board {
     private final Player goldPlayer;
     private final Player silverPlayer;
     private List<Figure> canBePulled = new ArrayList<>();
+    private Player currentPlayer;
+    private int turnNumber = 0;
+    private Coords pullPosition = new Coords(-1, -1);
+
 
     public Board() {
         board = new Figure[8][8];
@@ -20,6 +24,7 @@ public class Board {
         }
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
+        currentPlayer = goldPlayer;
     }
 
     @Override
@@ -42,6 +47,24 @@ public class Board {
         return goldPlayer;
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public int getTurnNumber() {
+        return turnNumber;
+    }
+
+    public void changeCurrentPlayer() {
+        if (currentPlayer == goldPlayer){
+            currentPlayer = silverPlayer;
+        }
+        else {
+            turnNumber++;
+            currentPlayer = goldPlayer;
+        }
+    }
+
     public Player getSilverPlayer() {
         return silverPlayer;
     }
@@ -54,6 +77,14 @@ public class Board {
     public PlayerColor getWinner(){
         //TODO
         return null;
+    }
+
+    public Coords getPullPosition() {
+        return pullPosition;
+    }
+
+    public void setPullPosition(Coords pullPosition) {
+        this.pullPosition = pullPosition;
     }
 
     public List<Figure> getCanBePulled() {

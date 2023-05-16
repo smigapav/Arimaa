@@ -1,9 +1,8 @@
 package cz.cvut.fel.pjv.arimaa.model.figures;
 
 import cz.cvut.fel.pjv.arimaa.model.Board;
+import cz.cvut.fel.pjv.arimaa.model.Coords;
 import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
-import cz.cvut.fel.pjv.arimaa.model.Directions;
-import cz.cvut.fel.pjv.arimaa.model.tiles.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,17 +69,28 @@ public abstract class Figure {
         return board;
     }
 
-    // returns all figures on adjacent tiles from this one
-    public List<Figure> getAdjacentFigures() {
+    // returns all tiles adjacent to this one
+    public List<Figure> getAdjacentTiles() {
         List<Figure> out = new ArrayList<>();
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 Figure tile = this.board.getBoard()[i][j];
-                if ((i + 1 == this.row || i - 1 == this.row) && j == this.col && tile != null) {
+                if ((i + 1 == this.row || i - 1 == this.row) && j == this.col) {
                     out.add(tile);
-                } else if ((j + 1 == this.col || j - 1 == this.col) && i == this.row && tile != null) {
+                } else if ((j + 1 == this.col || j - 1 == this.col) && i == this.row) {
                     out.add(tile);
                 }
+            }
+        }
+        return out;
+    }
+
+    // returns all figures on adjacent tiles from this one
+    public List<Figure> getAdjacentFigures() {
+        List<Figure> out = new ArrayList<>();
+        for (Figure figure : getAdjacentTiles()) {
+            if (figure != null){
+                out.add(figure);
             }
         }
         return out;
@@ -122,9 +132,12 @@ public abstract class Figure {
         List<Figure> out = new ArrayList<>();
         List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
         for (Figure figure : adjacentEnemyFigures) {
-            if (figure.isStronger(this)){
+            if (this.isStronger(figure)){
                 out.add(figure);
             }
+        }
+        if (out.size() > 0){
+            board.setPullPosition(new Coords(this.getRow(), this.getCol()));
         }
         board.setCanBePulled(out);
     }
@@ -160,72 +173,60 @@ public abstract class Figure {
     // Checks if this figure is frozen
     public void checkIfFrozen(){
         List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
-        if (adjacentEnemyFigures.size() > 0){
-            for (Figure figure : adjacentEnemyFigures) {
-                if (figure.isStronger(this)){
-                    this.setFrozen(true);
-                    return;
-                }
+        //this.setFrozen(false);
+        for (Figure figure : adjacentEnemyFigures) {
+            if (figure.isStronger(this)){
+                this.setFrozen(true);
             }
         }
-        this.setFrozen(false);
+        if (this.getAdjacentFriendlyFigures().size() > 0){
+            this.setFrozen(false);
+        }
     }
 
-    public boolean move(Directions direction){
-        boolean out = false;
+
+    public boolean move(int row, int col){
         // check if the figure is frozen
         if (this.isFrozen){
             return false;
         }
         // check if the new position is within the bounds of the board
-        if ((direction.equals(Directions.UP) && this.row == 7) ||
-            (direction.equals(Directions.DOWN) && this.row == 0) ||
-            (direction.equals(Directions.LEFT) && this.col == 0) ||
-            (direction.equals(Directions.RIGHT) && this.col == 7)){
+        if (row < 0 || row > 7 || col < 0 || col > 7){
             return false;
         }
         // check if the new position is empty
         // move the figure to the new position
-        switch (direction) {
-            case UP -> {
-                if (this.board.getBoard()[this.row+1][this.col] == null) {
-                    this.alterPullPool();
-                    board.getBoard()[this.row+1][this.col] = this;
-                    board.getBoard()[this.row][this.col] = null;
-                    this.row = this.row + 1;
-                    out = true;
-                }
-            }
-            case DOWN -> {
-                if (this.board.getBoard()[this.row-1][this.col] == null) {
-                    this.alterPullPool();
-                    board.getBoard()[this.row-1][this.col] = this;
-                    board.getBoard()[this.row][this.col] = null;
-                    this.row = this.row - 1;
-                    out = true;
-                }
-            }
-            case RIGHT -> {
-                if (this.board.getBoard()[this.row][this.col+1] == null) {
-                    this.alterPullPool();
-                    board.getBoard()[this.row][this.col+1] = this;
-                    board.getBoard()[this.row][this.col] = null;
-                    this.col = this.col + 1;
-                    out = true;
-                }
-            }
-            case LEFT -> {
-                if (this.board.getBoard()[this.row][this.col-1] == null) {
-                    this.alterPullPool();
-                    board.getBoard()[this.row][this.col-1] = this;
-                    board.getBoard()[this.row][this.col] = null;
-                    this.col = this.col - 1;
-                    out = true;
-                }
-            }
+        if (this.board.getBoard()[row][col] == null){
+            this.alterPullPool();
+            this.board.getBoard()[row][col] = this;
+            this.board.getBoard()[this.row][this.col] = null;
+            this.row = row;
+            this.col = col;
+            board.checkTraps();
+            this.checkIfFrozenForAllTiles();
+            return true;
         }
-        board.checkTraps();
-        this.checkIfFrozenForAllTiles();
-        return out;
+        return false;
+    }
+
+    public boolean forceMove(int row, int col){
+        // check if the new position is within the bounds of the board
+        if (row < 0 || row > 7 || col < 0 || col > 7){
+            return false;
+        }
+        // check if the new position is empty
+        // move the figure to the new position
+        if (this.board.getBoard()[row][col] == null){
+            this.getBoard().setCanBePulled(new ArrayList<>());
+            this.board.setPullPosition(new Coords(this.row, this.col));
+            this.board.getBoard()[row][col] = this;
+            this.board.getBoard()[this.row][this.col] = null;
+            this.row = row;
+            this.col = col;
+            board.checkTraps();
+            this.checkIfFrozenForAllTiles();
+            return true;
+        }
+        return false;
     }
 }

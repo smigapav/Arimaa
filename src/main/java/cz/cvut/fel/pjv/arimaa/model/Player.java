@@ -46,7 +46,7 @@ public class Player {
         //Ends players turn and sets his movesLeft back to 4
     }
 
-    public ArrayList<Figure> getAvailablePieces(){
+    public ArrayList<Figure> getAvailableFriendlyPieces(){
         ArrayList<Figure> figures = new ArrayList<>();
         for (Figure[] row : this.board.getBoard()) {
             for (Figure figure : row) {
@@ -54,14 +54,25 @@ public class Player {
                 if (figure != null && figure.getFigureColor().equals(this.playerColor) && !figure.getIsFrozen()) {
                     figures.add(figure);
                 }
+            }
+        }
+        return figures;
+    }
+
+    public ArrayList<Figure> getAvailableEnemyPieces(){
+        ArrayList<Figure> figures = new ArrayList<>();
+        for (Figure[] row : this.board.getBoard()) {
+            for (Figure figure : row) {
                 // add all enemy figures that can be pushed
-                else if (figure != null && !figure.getFigureColor().equals(this.playerColor) && figure.canBePushed()) {
+                if (figure != null && !figure.getFigureColor().equals(this.playerColor) && figure.canBePushed()) {
                     figures.add(figure);
                 }
             }
         }
         return figures;
     }
+
+
 
     public void placeFigure(int row, int col){
         if ((this.playerColor == PlayerColor.GOLD && row != 0 && row != 1) || (this.playerColor == PlayerColor.SILVER && row != 6 && row != 7)){

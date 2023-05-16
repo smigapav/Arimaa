@@ -4,6 +4,9 @@ import cz.cvut.fel.pjv.arimaa.model.Board;
 import cz.cvut.fel.pjv.arimaa.model.Directions;
 import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Rabbit extends Figure {
     public Rabbit(PlayerColor figurePlayerColor, Board board, int row, int col) {
         super(figurePlayerColor, 0, board, row, col);
@@ -14,63 +17,33 @@ public class Rabbit extends Figure {
         return "Rabbit";
     }
 
+
     @Override
-    public boolean move(Directions direction) {
+    public boolean move(int row, int col) {
         // check if the new position is within the bounds of the board
-        if ((direction.equals(Directions.UP) && getRow() == 7) ||
-                (direction.equals(Directions.DOWN) && getRow() == 0) ||
-                (direction.equals(Directions.LEFT) && getCol() == 0) ||
-                (direction.equals(Directions.RIGHT) && getCol() == 7)){
+        if (row < 0 || row > 7 || col < 0 || col > 7){
             return false;
         }
         // check if golden rabbit is trying to go up
-        if (this.getFigureColor() == PlayerColor.GOLD && direction == Directions.DOWN){
+        if (this.getFigureColor() == PlayerColor.GOLD && row < this.getRow()){
             return false;
         }
         // check if silver rabbit is trying to go down
-        if (this.getFigureColor() == PlayerColor.SILVER && direction == Directions.UP){
+        if (this.getFigureColor() == PlayerColor.SILVER && row > this.getRow()){
             return false;
         }
         // check if the new position is empty
         // move the figure to the new position
-        switch (direction) {
-            case UP -> {
-                if (getBoard().getBoard()[getRow()+1][getCol()] == null) {
-                    getBoard().getBoard()[getRow()+1][getCol()] = this;
-                    getBoard().getBoard()[getRow()][getCol()] = null;
-                    setRow(getRow() + 1);
-                    return true;
-                }
-            }
-            case DOWN -> {
-                if (getBoard().getBoard()[getRow()-1][getCol()] == null) {
-                    getBoard().getBoard()[getRow()-1][getCol()] = this;
-                    getBoard().getBoard()[getRow()][getCol()] = null;
-                    setRow(getRow() - 1);
-                    return true;
-                }
-            }
-            case RIGHT -> {
-                if (getBoard().getBoard()[getRow()][getCol()+1] == null) {
-                    getBoard().getBoard()[getRow()][getCol()+1] = this;
-                    getBoard().getBoard()[getRow()][getCol()] = null;
-                    setCol(getCol() + 1);
-                    return true;
-                }
-            }
-            case LEFT -> {
-                if (getBoard().getBoard()[getRow()][getCol()-1] == null) {
-                    getBoard().getBoard()[getRow()][getCol()-1] = this;
-                    getBoard().getBoard()[getRow()][getCol()] = null;
-                    setCol(getCol() - 1);
-                    return true;
-                }
-            }
+        if (getBoard().getBoard()[row][col] == null){
+            this.alterPullPool();
+            this.getBoard().getBoard()[row][col] = this;
+            this.getBoard().getBoard()[this.getRow()][this.getCol()] = null;
+            this.setRow(row);
+            this.setCol(col);
+            this.getBoard().checkTraps();
+            this.checkIfFrozenForAllTiles();
+            return true;
         }
         return false;
-    }
-
-    public boolean pushPull(Directions direction){
-        return super.move(direction);
     }
 }
