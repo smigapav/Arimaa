@@ -41,9 +41,16 @@ public class Player {
         this.time = time;
     }
 
-    public void endTurn(){
-        //TODO
-        //Ends players turn and sets his movesLeft back to 4
+    public void decreaseMovesLeft(){
+        this.movesLeft--;
+    }
+
+    public void resetMovesLeft() {
+        this.movesLeft = 4;
+    }
+
+    public int getMovesLeft() {
+        return movesLeft;
     }
 
     public ArrayList<Figure> getAvailableFriendlyPieces(){

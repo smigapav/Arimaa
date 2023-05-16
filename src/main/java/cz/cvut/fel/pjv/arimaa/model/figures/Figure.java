@@ -186,6 +186,10 @@ public abstract class Figure {
 
 
     public boolean move(int row, int col){
+        // check if player has any moves left
+        if (this.board.getCurrentPlayer().getMovesLeft() == 0){
+            return false;
+        }
         // check if the figure is frozen
         if (this.isFrozen){
             return false;
@@ -204,12 +208,17 @@ public abstract class Figure {
             this.col = col;
             board.checkTraps();
             this.checkIfFrozenForAllTiles();
+            this.board.getCurrentPlayer().decreaseMovesLeft();
             return true;
         }
         return false;
     }
 
     public boolean forceMove(int row, int col){
+        // check if player has any moves left
+        if (this.board.getCurrentPlayer().getMovesLeft() == 0){
+            return false;
+        }
         // check if the new position is within the bounds of the board
         if (row < 0 || row > 7 || col < 0 || col > 7){
             return false;
@@ -225,6 +234,7 @@ public abstract class Figure {
             this.col = col;
             board.checkTraps();
             this.checkIfFrozenForAllTiles();
+            this.board.getCurrentPlayer().decreaseMovesLeft();
             return true;
         }
         return false;

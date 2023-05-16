@@ -57,9 +57,11 @@ public class Board {
 
     public void changeCurrentPlayer() {
         if (currentPlayer == goldPlayer){
+            currentPlayer.resetMovesLeft();
             currentPlayer = silverPlayer;
         }
         else {
+            currentPlayer.resetMovesLeft();
             turnNumber++;
             currentPlayer = goldPlayer;
         }

@@ -151,13 +151,16 @@ public class Table extends JFrame {
             b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println(board.getCanBePulled());
                     // listener for the first turn
                     if (board.getTurnNumber() == 0){
                         board.getCurrentPlayer().placeFigure(7 - viewRow, viewCol);
                     }
                     // listener for normal turns
                     else {
+                        // if player has no moves left
+                        if (board.getCurrentPlayer().getMovesLeft() == 0){
+                            return;
+                        }
                         // select a figure to move
                         if (selectedFigure == null) {
                             // select friendly figure
@@ -175,7 +178,7 @@ public class Table extends JFrame {
                                 selectedFigure = null;  // deselect the figure
                             }
                             // select enemy figure for push
-                            else if (board.getCurrentPlayer().getAvailableEnemyPieces().contains(board.getBoard()[7 - viewRow][viewCol])) {
+                            else if (board.getCurrentPlayer().getAvailableEnemyPieces().contains(board.getBoard()[7 - viewRow][viewCol]) && board.getCurrentPlayer().getMovesLeft() >= 2) {
                                 selectedFigure = board.getBoard()[7 - viewRow][viewCol];
                                 moveType = MoveType.PUSH;
                             }

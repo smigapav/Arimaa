@@ -20,6 +20,14 @@ public class Rabbit extends Figure {
 
     @Override
     public boolean move(int row, int col) {
+        // check if player has any moves left
+        if (this.getBoard().getCurrentPlayer().getMovesLeft() == 0){
+            return false;
+        }
+        // check if the figure is frozen
+        if (this.getIsFrozen()){
+            return false;
+        }
         // check if the new position is within the bounds of the board
         if (row < 0 || row > 7 || col < 0 || col > 7){
             return false;
@@ -42,6 +50,7 @@ public class Rabbit extends Figure {
             this.setCol(col);
             this.getBoard().checkTraps();
             this.checkIfFrozenForAllTiles();
+            this.getBoard().getCurrentPlayer().decreaseMovesLeft();
             return true;
         }
         return false;
