@@ -53,6 +53,10 @@ public class Player {
         return movesLeft;
     }
 
+    public void setMovesLeft(int movesLeft) {
+        this.movesLeft = movesLeft;
+    }
+
     public ArrayList<Figure> getAvailableFriendlyPieces(){
         ArrayList<Figure> figures = new ArrayList<>();
         for (Figure[] row : this.board.getBoard()) {
@@ -78,8 +82,6 @@ public class Player {
         }
         return figures;
     }
-
-
 
     public void placeFigure(int row, int col){
         if ((this.playerColor == PlayerColor.GOLD && row != 0 && row != 1) || (this.playerColor == PlayerColor.SILVER && row != 6 && row != 7)){

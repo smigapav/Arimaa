@@ -49,7 +49,7 @@ public class Rabbit extends Figure {
             this.setRow(row);
             this.setCol(col);
             this.getBoard().checkTraps();
-            this.checkIfFrozenForAllTiles();
+            this.getBoard().checkIfFrozenForAllTiles();
             this.getBoard().getCurrentPlayer().decreaseMovesLeft();
             return true;
         }

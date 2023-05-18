@@ -158,17 +158,6 @@ public abstract class Figure {
         return this.strength > figure.strength;
     }
 
-    // Updates isFrozen for all figures on the board
-    public void checkIfFrozenForAllTiles(){
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                Figure tile = this.board.getBoard()[i][j];
-                if (tile != null){
-                    tile.checkIfFrozen();
-                }
-            }
-        }
-    }
 
     // Checks if this figure is frozen
     public void checkIfFrozen(){
@@ -207,7 +196,7 @@ public abstract class Figure {
             this.row = row;
             this.col = col;
             board.checkTraps();
-            this.checkIfFrozenForAllTiles();
+            this.board.checkIfFrozenForAllTiles();
             this.board.getCurrentPlayer().decreaseMovesLeft();
             return true;
         }
@@ -233,7 +222,7 @@ public abstract class Figure {
             this.row = row;
             this.col = col;
             board.checkTraps();
-            this.checkIfFrozenForAllTiles();
+            this.board.checkIfFrozenForAllTiles();
             this.board.getCurrentPlayer().decreaseMovesLeft();
             return true;
         }

@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import static cz.cvut.fel.pjv.arimaa.model.PlayerColor.*;
 
@@ -56,7 +57,24 @@ public class Table extends JFrame {
         });
         tools.add(newButton);
         JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                board.getGameSaver().saveGame(board);
+            }
+        });
         tools.add(saveButton);
+        JButton loadButton = new JButton("Load");
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<String> file = board.getGameLoader().readFileRows();
+                board = new Board(file);
+                boardPanel.redrawBoard();
+                redrawToolBar();
+            }
+        });
+        tools.add(loadButton);
         tools.addSeparator();
         message = getMessageText();
         tools.add(message);
@@ -78,7 +96,7 @@ public class Table extends JFrame {
                 if (board.getCurrentPlayer().getMovesLeft() == 4 && board.getTurnNumber() != 0) {
                     return;
                 }
-                // if you pushed a enemy figure and didn't move your figure to its former place, you can't end the turn
+                // if you pushed an enemy figure and didn't move your figure to its former place, you can't end the turn
                 if (moveType == MoveType.PUSH) {
                     return;
                 }
@@ -217,7 +235,7 @@ public class Table extends JFrame {
                                 selectedFigure = board.getBoard()[7 - viewRow][viewCol];
                                 moveType = MoveType.NORMAL_MOVE;
                             }
-                            // if push happend last turn, select figure to pull to the pre-push position
+                            // if push happened last turn, select figure to pull to the pre-push position
                             else if (moveType == MoveType.PUSH && Math.abs(board.getPullPosition().getRow() - (7 - viewRow)) == 1 && board.getPullPosition().getCol() == viewCol ||
                                     Math.abs(board.getPullPosition().getCol() - viewCol) == 1 && board.getPullPosition().getRow() == (7 - viewRow)) {
                                 selectedFigure = board.getBoard()[7 - viewRow][viewCol];
