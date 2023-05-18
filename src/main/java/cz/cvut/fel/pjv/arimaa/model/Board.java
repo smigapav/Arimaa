@@ -71,13 +71,44 @@ public class Board {
         return silverPlayer;
     }
 
-    public boolean isWinner(){
-        //TODO
-        return false;
-    }
-
     public PlayerColor getWinner(){
-        //TODO
+        int goldenRabbits = 0;
+        int silverRabbits = 0;
+        for (Figure tile : this.getBoard()[7]) {
+            if (tile != null && tile.getFigureColor() == PlayerColor.GOLD && tile.getStrength() == 0) {
+                return PlayerColor.GOLD;
+            }
+        }
+        for (Figure tile : this.getBoard()[0]) {
+            if (tile != null && tile.getFigureColor() == PlayerColor.SILVER && tile.getStrength() == 0) {
+                return PlayerColor.SILVER;
+            }
+        }
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                Figure tile = this.getBoard()[i][j];
+                if (tile != null && tile.getStrength() == 0){
+                    if (tile.getFigureColor() == PlayerColor.GOLD){
+                        goldenRabbits++;
+                    } else {
+                        silverRabbits++;
+                    }
+                }
+            }
+        }
+        if (goldenRabbits == 0){
+            return PlayerColor.SILVER;
+        }
+        if (silverRabbits == 0){
+            return PlayerColor.GOLD;
+        }
+        if (this.getCurrentPlayer().getAvailableFriendlyPieces().size() == 0 && this.getCurrentPlayer().getAvailableEnemyPieces().size() == 0) {
+            if (this.getCurrentPlayer().getPlayerColor() == PlayerColor.GOLD) {
+                return PlayerColor.SILVER;
+            } else {
+                return PlayerColor.GOLD;
+            }
+        }
         return null;
     }
 

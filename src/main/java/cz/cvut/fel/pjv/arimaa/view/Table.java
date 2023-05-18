@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import static cz.cvut.fel.pjv.arimaa.model.PlayerColor.*;
 
@@ -25,11 +26,13 @@ public class Table extends JFrame {
     private Board board;
     private Figure selectedFigure = null;
     private MoveType moveType = null;
+    private JToolBar tools;
 
     public Table(Board board) {
         this.board = board;
         this.gameFrame = new JFrame("Arimaa");
         this.gameFrame.setLayout(new BorderLayout(3, 3));
+        tools = new JToolBar();
         createToolBar();
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.boardPanel = new BoardPanel();
@@ -41,10 +44,8 @@ public class Table extends JFrame {
     }
 
     private void createToolBar() {
-        JToolBar tools = new JToolBar();
         tools.setFloatable(false);
         gameFrame.add(tools, BorderLayout.PAGE_START);
-        // add some buttons to the JToolBar (TODO: add functionality to these buttons)
         JButton newButton = new JButton("New");
         newButton.addActionListener(new ActionListener() {
             @Override
@@ -57,8 +58,7 @@ public class Table extends JFrame {
         JButton saveButton = new JButton("Save");
         tools.add(saveButton);
         tools.addSeparator();
-        // add the message label to the JToolBar
-        message = new JLabel("Play Arimaa!!!");
+        message = getMessageText();
         tools.add(message);
         tools.addSeparator();
         JButton exitButton = new JButton("Exit");
@@ -74,20 +74,63 @@ public class Table extends JFrame {
         endTurn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // if you didn't move any figure, you can't end your turn
+                if (board.getCurrentPlayer().getMovesLeft() == 4 && board.getTurnNumber() != 0) {
+                    return;
+                }
+                // if you pushed a enemy figure and didn't move your figure to its former place, you can't end the turn
+                if (moveType == MoveType.PUSH) {
+                    return;
+                }
+                board.setCanBePulled(new ArrayList<>());
                 board.changeCurrentPlayer();
+                redrawToolBar();
             }
         });
         tools.add(endTurn);
     }
 
-    public BoardPanel getBoardPanel() {
-        return boardPanel;
+
+    private void redrawToolBar() {
+        tools.removeAll(); // Remove all components from the existing JToolBar
+        createToolBar(); // Create the JToolBar again
+        tools.revalidate(); // Revalidate the toolbar to update the layout
+        tools.repaint(); // Repaint the toolbar to reflect the changes
+    }
+
+    private JLabel getMessageText() {
+        if (board.getTurnNumber() == 0 && board.getCurrentPlayer().getPlayerColor() == GOLD) {
+            return new JLabel("Gold player - Place your figures");
+        }
+        if (board.getTurnNumber() == 0 && board.getCurrentPlayer().getPlayerColor() == SILVER) {
+            return new JLabel("Silver player - Place your figures");
+        }
+        if (board.getCurrentPlayer().getPlayerColor() == GOLD) {
+            return new JLabel("Gold player - " + board.getCurrentPlayer().getMovesLeft() + " moves left");
+        }
+        if (board.getCurrentPlayer().getPlayerColor() == SILVER) {
+            return new JLabel("Silver player - " + board.getCurrentPlayer().getMovesLeft() + " moves left");
+        }
+        return new JLabel("Error");
+    }
+
+    private class EndOfGameScreen extends JFrame {
+        private final JFrame endOfGameFrame;
+        private static final Dimension END_OF_GAME_FRAME_DIMENSION = new Dimension(400, 400);
+
+        EndOfGameScreen() {
+            this.endOfGameFrame = new JFrame("End of game");
+            this.endOfGameFrame.setLayout(new BorderLayout(3, 3));
+            this.endOfGameFrame.setSize(END_OF_GAME_FRAME_DIMENSION);
+            this.endOfGameFrame.setVisible(true);
+            this.endOfGameFrame.setResizable(false);
+            this.endOfGameFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        }
     }
 
     private class BoardPanel extends JPanel {
 
         private JButton[][] chessBoardSquares = new JButton[8][8];
-        private static final Dimension tileDimensions = new Dimension(60, 60);
         private static final String COLS = "ABCDEFGH";
 
         BoardPanel() {
@@ -98,10 +141,17 @@ public class Table extends JFrame {
 
         private void redrawBoard() {
             removeAll();
+            redrawToolBar();
             fillPanelWithTilesAndCoords();
             assignFigureImagesToTiles(board);
             validate();
             repaint();
+            if (board.getWinner() != null && board.getTurnNumber() != 0) {
+                EndOfGameScreen endOfGameScreen = new EndOfGameScreen();
+                JLabel winner = new JLabel(board.getWinner() + " player won!");
+                winner.setHorizontalAlignment(SwingConstants.CENTER);
+                endOfGameScreen.endOfGameFrame.add(winner);
+            }
         }
 
         private void fillPanelWithTilesAndCoords() {
@@ -122,7 +172,6 @@ public class Table extends JFrame {
                     }
                     JButton b = new JButton();
                     addListenersToTiles(b, row, col);
-                    b.setPreferredSize(tileDimensions);
                     if ((row == 2 || row == 5) && (col == 2 || col == 5)) {
                         b.setBackground(new Color(140, 33, 42));
                     } else {
