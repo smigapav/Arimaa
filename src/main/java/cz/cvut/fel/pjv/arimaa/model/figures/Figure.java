@@ -145,7 +145,7 @@ public abstract class Figure {
     public boolean canBePushed(){
         List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
         for (Figure figure : adjacentEnemyFigures) {
-            if (figure.isStronger(this)){
+            if (!figure.getIsFrozen() && figure.isStronger(this)){
                 return true;
             }
         }
@@ -173,7 +173,7 @@ public abstract class Figure {
     // Checks if this figure is frozen
     public void checkIfFrozen(){
         List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
-        //this.setFrozen(false);
+        this.setFrozen(false);
         for (Figure figure : adjacentEnemyFigures) {
             if (figure.isStronger(this)){
                 this.setFrozen(true);
