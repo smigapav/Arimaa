@@ -5,6 +5,9 @@ import cz.cvut.fel.pjv.arimaa.model.figures.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Board {
     private Figure[][] board;
@@ -16,9 +19,11 @@ public class Board {
     private Coords pullPosition = new Coords(-1, -1);
     private GameSaver gameSaver = new GameSaver();
     private GameLoader gameLoader = new GameLoader();
+    private boolean loggingOn;
+    private static final Logger logger = Logger.getLogger(Board.class.getName());
 
 
-    public Board() {
+    public Board(boolean log) {
         board = new Figure[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -28,13 +33,23 @@ public class Board {
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
         currentPlayer = goldPlayer;
+        loggingOn = log;
+        if (loggingOn) {
+            logger.log(Level.INFO, "New game started");
+        }
+        // Set the logging level to FINE
+        logger.setLevel(Level.INFO);
+
+        // Create a console handler to print log messages to the console
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.INFO);
+        logger.addHandler(consoleHandler);
     }
 
-    public Board(List<String> file) {
+    public Board(List<String> file, boolean log) {
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
         turnNumber = Integer.parseInt(file.get(0));
-        System.out.println(turnNumber);
         file.remove(0);
         PlayerColor playerColor = PlayerColor.valueOf(file.get(0));
         currentPlayer = playerColor == PlayerColor.GOLD ? goldPlayer : silverPlayer;
@@ -72,7 +87,17 @@ public class Board {
                     break;
             }
         }
+        loggingOn = log;
+        if (loggingOn) {
+            logger.log(Level.INFO, "New game started");
+        }
+        // Set the logging level to FINE
+        logger.setLevel(Level.INFO);
 
+        // Create a console handler to print log messages to the console
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.INFO);
+        logger.addHandler(consoleHandler);
     }
 
     @Override
@@ -111,6 +136,14 @@ public class Board {
         return gameLoader;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public boolean isLoggingOn() {
+        return loggingOn;
+    }
+
     public void changeCurrentPlayer() {
         if (currentPlayer == goldPlayer){
             currentPlayer.resetMovesLeft();
@@ -121,6 +154,9 @@ public class Board {
             turnNumber++;
             currentPlayer = goldPlayer;
         }
+        if (loggingOn) {
+            logger.log(Level.FINE, "Current player changed to " + currentPlayer.getPlayerColor());
+        }
     }
 
     public Player getSilverPlayer() {
@@ -130,6 +166,9 @@ public class Board {
     public PlayerColor getWinner(){
         int goldenRabbits = 0;
         int silverRabbits = 0;
+        if (loggingOn) {
+            logger.log(Level.FINE, "Checking for winner");
+        }
         for (Figure tile : this.getBoard()[7]) {
             if (tile != null && tile.getFigureColor() == PlayerColor.GOLD && tile.getStrength() == 0) {
                 return PlayerColor.GOLD;
@@ -186,19 +225,31 @@ public class Board {
 
     public void checkTraps(){
         Figure[] tiles = {board[2][2], board[2][5], board[5][2], board[5][5]};
+        if (loggingOn) {
+            logger.log(Level.FINE, "Checking traps");
+        }
         for (Figure tile : tiles) {
             if (tile != null && tile.getAdjacentFriendlyFigures().size() == 0){
                 board[tile.getRow()][tile.getCol()] = null;
+                if (loggingOn) {
+                    logger.log(Level.FINER, "Trap triggered at " + tile.getRow() + " " + tile.getCol());
+                }
             }
         }
     }
 
     // Updates isFrozen for all figures on the board
     public void checkIfFrozenForAllTiles(){
+        if (loggingOn) {
+            logger.log(Level.FINE, "Checking if frozen for all tiles");
+        }
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 Figure tile = this.board[i][j];
                 if (tile != null){
+                    if (loggingOn) {
+                        logger.log(Level.FINER, "Checking if frozen for tile at " + tile.getRow() + " " + tile.getCol());
+                    }
                     tile.checkIfFrozen();
                 }
             }
@@ -208,6 +259,9 @@ public class Board {
     public boolean placeElephant(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Elephant(playerColor, this, row, col);
+            if (loggingOn) {
+                logger.log(Level.FINE, "Elephant placed at " + row + " " + col);
+            }
             return true;
         }
         return false;
@@ -216,6 +270,9 @@ public class Board {
     public boolean placeCamel(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Camel(playerColor, this, row, col);
+            if (loggingOn) {
+                logger.log(Level.FINE, "Camel placed at " + row + " " + col);
+            }
             return true;
         }
         return false;
@@ -224,6 +281,9 @@ public class Board {
     public boolean placeHorse(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Horse(playerColor, this, row, col);
+            if (loggingOn) {
+                logger.log(Level.FINE, "Horse placed at " + row + " " + col);
+            }
             return true;
         }
         return false;
@@ -232,6 +292,9 @@ public class Board {
     public boolean placeDog(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Dog(playerColor, this, row, col);
+            if (loggingOn) {
+                logger.log(Level.FINE, "Dog placed at " + row + " " + col);
+            }
             return true;
         }
         return false;
@@ -240,6 +303,9 @@ public class Board {
     public boolean placeCat(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Cat(playerColor, this, row, col);
+            if (loggingOn) {
+                logger.log(Level.FINE, "Cat placed at " + row + " " + col);
+            }
             return true;
         }
         return false;
@@ -248,6 +314,9 @@ public class Board {
     public boolean placeRabbit(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Rabbit(playerColor, this, row, col);
+            if (loggingOn) {
+                logger.log(Level.FINE, "Rabbit placed at " + row + " " + col);
+            }
             return true;
         }
         return false;
@@ -275,8 +344,14 @@ public class Board {
                         }
                     }
                 }
+                if (board.loggingOn) {
+                    logger.log(Level.FINE, "Game saved");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                if (board.loggingOn) {
+                    logger.log(Level.SEVERE, "Game not saved");
+                }
             }
         }
     }

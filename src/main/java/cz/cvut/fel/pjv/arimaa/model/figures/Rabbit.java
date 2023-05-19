@@ -6,6 +6,7 @@ import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Rabbit extends Figure {
     public Rabbit(PlayerColor figurePlayerColor, Board board, int row, int col) {
@@ -20,6 +21,9 @@ public class Rabbit extends Figure {
 
     @Override
     public boolean move(int row, int col) {
+        if (this.getBoard().isLoggingOn()){
+            this.getBoard().getLogger().log(Level.FINE, "Moving Rabbit at " + this.getRow() + " " + this.getCol() + " to " + row + " " + col);
+        }
         // check if player has any moves left
         if (this.getBoard().getCurrentPlayer().getMovesLeft() == 0){
             return false;

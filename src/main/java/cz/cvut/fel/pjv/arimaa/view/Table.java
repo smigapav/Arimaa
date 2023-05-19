@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import static cz.cvut.fel.pjv.arimaa.model.PlayerColor.*;
 
@@ -42,6 +43,9 @@ public class Table extends JFrame {
         this.gameFrame.setVisible(true);
         this.gameFrame.setResizable(false);
         this.gameFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        if (board.isLoggingOn()) {
+            board.getLogger().log(Level.INFO, "Table GUI created");
+        }
     }
 
     private void createToolBar() {
@@ -51,7 +55,7 @@ public class Table extends JFrame {
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                board = new Board();
+                board = new Board(true);
                 boardPanel.redrawBoard();
             }
         });
@@ -69,7 +73,7 @@ public class Table extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<String> file = board.getGameLoader().readFileRows();
-                board = new Board(file);
+                board = new Board(file, true);
                 boardPanel.redrawBoard();
                 redrawToolBar();
             }
@@ -106,6 +110,9 @@ public class Table extends JFrame {
             }
         });
         tools.add(endTurn);
+        if (board.isLoggingOn()) {
+            board.getLogger().log(Level.FINE, "Toolbar created");
+        }
     }
 
 
@@ -114,9 +121,15 @@ public class Table extends JFrame {
         createToolBar(); // Create the JToolBar again
         tools.revalidate(); // Revalidate the toolbar to update the layout
         tools.repaint(); // Repaint the toolbar to reflect the changes
+        if (board.isLoggingOn()) {
+            board.getLogger().log(Level.FINER, "Toolbar redrawn");
+        }
     }
 
     private JLabel getMessageText() {
+        if (board.isLoggingOn()) {
+            board.getLogger().log(Level.FINER, "Message text created");
+        }
         if (board.getTurnNumber() == 0 && board.getCurrentPlayer().getPlayerColor() == GOLD) {
             return new JLabel("Gold player - Place your figures");
         }
@@ -143,6 +156,9 @@ public class Table extends JFrame {
             this.endOfGameFrame.setVisible(true);
             this.endOfGameFrame.setResizable(false);
             this.endOfGameFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.INFO, "End of game screen created");
+            }
         }
     }
 
@@ -155,6 +171,9 @@ public class Table extends JFrame {
             super(new GridLayout(9, 9));
             fillPanelWithTilesAndCoords();
             assignFigureImagesToTiles(board);
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.INFO, "Board panel created");
+            }
         }
 
         private void redrawBoard() {
@@ -170,9 +189,15 @@ public class Table extends JFrame {
                 winner.setHorizontalAlignment(SwingConstants.CENTER);
                 endOfGameScreen.endOfGameFrame.add(winner);
             }
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.FINER, "Board panel redrawn");
+            }
         }
 
         private void fillPanelWithTilesAndCoords() {
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.FINER, "Board panel filled with tiles and coordinates");
+            }
             this.add(new JLabel(""));
             // fill the top row
             for (int row = 0; row < 8; row++) {
@@ -202,6 +227,9 @@ public class Table extends JFrame {
         }
 
         private void assignFigureImagesToTiles(Board board) {
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.FINER, "Board panel filled with figure images");
+            }
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     chessBoardSquares[i][j].removeAll();
@@ -287,6 +315,9 @@ public class Table extends JFrame {
                     redrawBoard();
                 }
             });
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.FINER, "Listeners added to tiles");
+            }
         }
 
         private Icon getIconForFigure(Figure figure) {
@@ -346,6 +377,9 @@ public class Table extends JFrame {
                 icon = new ImageIcon(uri.toURL());
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
+            }
+            if (board.isLoggingOn()) {
+                board.getLogger().log(Level.FINER, "Icon for figure " + figure + " created");
             }
             return icon;
         }

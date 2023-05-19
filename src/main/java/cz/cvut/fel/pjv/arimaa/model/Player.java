@@ -3,6 +3,7 @@ package cz.cvut.fel.pjv.arimaa.model;
 import cz.cvut.fel.pjv.arimaa.model.figures.Figure;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class Player {
     private final PlayerColor playerColor;
@@ -59,11 +60,17 @@ public class Player {
 
     public ArrayList<Figure> getAvailableFriendlyPieces(){
         ArrayList<Figure> figures = new ArrayList<>();
+        if (board.isLoggingOn()){
+            board.getLogger().log(Level.FINE, "Getting available friendly pieces");
+        }
         for (Figure[] row : this.board.getBoard()) {
             for (Figure figure : row) {
                 // add all friendly figures that are not frozen
                 if (figure != null && figure.getFigureColor().equals(this.playerColor) && !figure.getIsFrozen()) {
                     figures.add(figure);
+                    if (board.isLoggingOn()){
+                        board.getLogger().log(Level.FINER, "Adding " + figure.toString() + " at " + figure.getRow() + " " + figure.getCol() + " to available friendly pieces");
+                    }
                 }
             }
         }
@@ -72,11 +79,17 @@ public class Player {
 
     public ArrayList<Figure> getAvailableEnemyPieces(){
         ArrayList<Figure> figures = new ArrayList<>();
+        if (board.isLoggingOn()){
+            board.getLogger().log(Level.FINE, "Getting available enemy pieces");
+        }
         for (Figure[] row : this.board.getBoard()) {
             for (Figure figure : row) {
                 // add all enemy figures that can be pushed
                 if (figure != null && !figure.getFigureColor().equals(this.playerColor) && figure.canBePushed()) {
                     figures.add(figure);
+                    if (board.isLoggingOn()){
+                        board.getLogger().log(Level.FINER, "Adding " + figure.toString() + " at " + figure.getRow() + " " + figure.getCol() + " to available enemy pieces");
+                    }
                 }
             }
         }
@@ -84,6 +97,9 @@ public class Player {
     }
 
     public void placeFigure(int row, int col){
+        if (board.isLoggingOn()){
+            board.getLogger().log(Level.FINER, "Placing figure at " + row + " " + col);
+        }
         if ((this.playerColor == PlayerColor.GOLD && row != 0 && row != 1) || (this.playerColor == PlayerColor.SILVER && row != 6 && row != 7)){
             return;
         }
