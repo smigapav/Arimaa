@@ -16,14 +16,16 @@ public class Board {
     private List<Figure> canBePulled = new ArrayList<>();
     private Player currentPlayer;
     private int turnNumber = 0;
+    private StringBuilder history = new StringBuilder(turnNumber + "g ");
     private Coords pullPosition = new Coords(-1, -1);
     private GameSaver gameSaver = new GameSaver();
     private GameLoader gameLoader = new GameLoader();
     private boolean loggingOn;
+    private boolean loadedGame;
     private static final Logger logger = Logger.getLogger(Board.class.getName());
 
 
-    public Board(boolean log) {
+    public Board(boolean logging) {
         board = new Figure[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -33,20 +35,21 @@ public class Board {
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
         currentPlayer = goldPlayer;
-        loggingOn = log;
+        loadedGame = false;
+        loggingOn = logging;
         if (loggingOn) {
             logger.log(Level.INFO, "New game started");
         }
         // Set the logging level to FINE
         logger.setLevel(Level.INFO);
 
-        // Create a console handler to print log messages to the console
+        // Create a console handler to print logging messages to the console
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.INFO);
         logger.addHandler(consoleHandler);
     }
 
-    public Board(List<String> file, boolean log) {
+    public Board(List<String> file, boolean logging) {
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
         turnNumber = Integer.parseInt(file.get(0));
@@ -58,12 +61,15 @@ public class Board {
         file.remove(0);
         canBePulled = new ArrayList<>();
         pullPosition = new Coords(-1, -1);
+        history = new StringBuilder(file.get(0));
+        file.remove(0);
         board = new Figure[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 board[row][col] = null;
             }
         }
+        loadedGame = true;
         for (String row : file) {
             String[] figure = row.split(" ");
             switch (Integer.parseInt(figure[1])){
@@ -87,7 +93,7 @@ public class Board {
                     break;
             }
         }
-        loggingOn = log;
+        loggingOn = logging;
         if (loggingOn) {
             logger.log(Level.INFO, "New game started");
         }
@@ -144,6 +150,14 @@ public class Board {
         return loggingOn;
     }
 
+    public StringBuilder getHistory() {
+        return history;
+    }
+
+    public boolean isLoadedGame() {
+        return loadedGame;
+    }
+
     public void changeCurrentPlayer() {
         if (currentPlayer == goldPlayer){
             currentPlayer.resetMovesLeft();
@@ -153,6 +167,14 @@ public class Board {
             currentPlayer.resetMovesLeft();
             turnNumber++;
             currentPlayer = goldPlayer;
+        }
+        System.out.println(history);
+        history.append("\n");
+        history.append(turnNumber);
+        if (currentPlayer.getPlayerColor() == PlayerColor.GOLD) {
+            history.append("g ");
+        } else {
+            history.append("s ");
         }
         if (loggingOn) {
             logger.log(Level.FINE, "Current player changed to " + currentPlayer.getPlayerColor());
@@ -230,6 +252,7 @@ public class Board {
         }
         for (Figure tile : tiles) {
             if (tile != null && tile.getAdjacentFriendlyFigures().size() == 0){
+                tile.addDeathToHistory();
                 board[tile.getRow()][tile.getCol()] = null;
                 if (loggingOn) {
                     logger.log(Level.FINER, "Trap triggered at " + tile.getRow() + " " + tile.getCol());
@@ -344,6 +367,9 @@ public class Board {
                         }
                     }
                 }
+                writer.write("HISTORY STARTS HERE");
+                writer.newLine();
+                writer.write(board.getHistory().toString().replace("\n", "<newline>"));
                 if (board.loggingOn) {
                     logger.log(Level.FINE, "Game saved");
                 }
@@ -361,15 +387,27 @@ public class Board {
 
         public static List<String> readFileRows() {
             List<String> rows = new ArrayList<>();
+            boolean isMessage = false;
+            StringBuilder message = new StringBuilder();
 
             try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    rows.add(line);
+                    if (line.equals("HISTORY STARTS HERE")) {
+                        isMessage = true;
+                    }
+                    if (!isMessage) {
+                        rows.add(line);
+                    } else {
+                        if (!line.equals("HISTORY STARTS HERE")) {
+                            message.append(line);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            rows.add(3, message.toString().replace("<newline>", "\n"));
             return rows;
         }
     }

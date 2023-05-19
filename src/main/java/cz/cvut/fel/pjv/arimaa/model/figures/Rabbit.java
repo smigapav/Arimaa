@@ -48,6 +48,7 @@ public class Rabbit extends Figure {
         // move the figure to the new position
         if (getBoard().getBoard()[row][col] == null){
             this.alterPullPool();
+            this.addMoveToHistory(row, col);
             this.getBoard().getBoard()[row][col] = this;
             this.getBoard().getBoard()[this.getRow()][this.getCol()] = null;
             this.setRow(row);

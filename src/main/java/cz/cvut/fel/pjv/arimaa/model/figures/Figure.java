@@ -23,6 +23,7 @@ public abstract class Figure {
         this.board = board;
         this.row = row;
         this.col = col;
+        this.addPlacementToHistory(row, col);
         if (board.isLoggingOn()) {
             board.getLogger().log(Level.INFO, "Figure created: " + this.toString());
         }
@@ -234,6 +235,7 @@ public abstract class Figure {
         // move the figure to the new position
         if (this.board.getBoard()[row][col] == null){
             this.alterPullPool();
+            this.addMoveToHistory(row, col);
             this.board.getBoard()[row][col] = this;
             this.board.getBoard()[this.row][this.col] = null;
             this.row = row;
@@ -244,6 +246,82 @@ public abstract class Figure {
             return true;
         }
         return false;
+    }
+
+    public void addPositionToHistory(StringBuilder stringBuilder) {
+        if (this.figurePlayerColor == PlayerColor.GOLD){
+            switch (this.strength) {
+                case 0 -> stringBuilder.append("R");
+                case 1 -> stringBuilder.append("C");
+                case 2 -> stringBuilder.append("D");
+                case 3 -> stringBuilder.append("H");
+                case 4 -> stringBuilder.append("M");
+                case 5 -> stringBuilder.append("E");
+            }
+        } else {
+            switch (this.strength) {
+                case 0 -> stringBuilder.append("r");
+                case 1 -> stringBuilder.append("c");
+                case 2 -> stringBuilder.append("d");
+                case 3 -> stringBuilder.append("h");
+                case 4 -> stringBuilder.append("m");
+                case 5 -> stringBuilder.append("e");
+            }
+        }
+        switch (this.col) {
+            case 0 -> stringBuilder.append("a");
+            case 1 -> stringBuilder.append("b");
+            case 2 -> stringBuilder.append("c");
+            case 3 -> stringBuilder.append("d");
+            case 4 -> stringBuilder.append("e");
+            case 5 -> stringBuilder.append("f");
+            case 6 -> stringBuilder.append("g");
+            case 7 -> stringBuilder.append("h");
+        }
+        stringBuilder.append(this.row + 1);
+    }
+
+    public void addPlacementToHistory(int row, int col) {
+        if (!this.board.isLoadedGame()) {
+            if (this.board.isLoggingOn()) {
+                this.board.getLogger().log(Level.FINE, "Adding placement to history");
+            }
+            StringBuilder placement = new StringBuilder();
+            addPositionToHistory(placement);
+            placement.append(" ");
+            this.board.getHistory().append(placement);
+        }
+    }
+    public void addMoveToHistory(int row, int col) {
+        if (this.board.isLoggingOn()) {
+            this.board.getLogger().log(Level.FINE, "Adding move to history");
+        }
+        StringBuilder move = new StringBuilder();
+        addPositionToHistory(move);
+        if (this.row < row) {
+            move.append("n");
+        }
+        if (this.row > row) {
+            move.append("s");
+        }
+        if (this.col < col) {
+            move.append("e");
+        }
+        if (this.col > col) {
+            move.append("w");
+        }
+        move.append(" ");
+        this.board.getHistory().append(move);
+    }
+
+    public void addDeathToHistory() {
+        if (this.board.isLoggingOn()) {
+            this.board.getLogger().log(Level.FINE, "Adding death to history");
+        }
+        StringBuilder death = new StringBuilder();
+        addPositionToHistory(death);
+        death.append("x ");
+        this.board.getHistory().append(death);
     }
 
     public boolean forceMove(int row, int col){
@@ -263,6 +341,7 @@ public abstract class Figure {
         if (this.board.getBoard()[row][col] == null){
             this.getBoard().setCanBePulled(new ArrayList<>());
             this.board.setPullPosition(new Coords(this.row, this.col));
+            this.addMoveToHistory(row, col);
             this.board.getBoard()[row][col] = this;
             this.board.getBoard()[this.row][this.col] = null;
             this.row = row;

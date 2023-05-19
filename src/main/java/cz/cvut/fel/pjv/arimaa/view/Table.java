@@ -23,9 +23,10 @@ public class Table extends JFrame {
 
     private final JFrame gameFrame;
     private BoardPanel boardPanel;
-    private static Dimension OUTER_FRAME_DIMENSION = new Dimension(800, 800);
+    private static Dimension OUTER_FRAME_DIMENSION = new Dimension(1000, 800);
     private JLabel message;
     private Board board;
+    private HistoryPanel historyPanel;
     private Figure selectedFigure = null;
     private MoveType moveType = null;
     private JToolBar tools;
@@ -38,6 +39,8 @@ public class Table extends JFrame {
         createToolBar();
         this.gameFrame.setSize(OUTER_FRAME_DIMENSION);
         this.boardPanel = new BoardPanel();
+        this.historyPanel = new HistoryPanel();
+        this.gameFrame.add(this.historyPanel, BorderLayout.EAST);
         this.gameFrame.add(boardPanel, BorderLayout.CENTER);
         pack();
         this.gameFrame.setVisible(true);
@@ -75,6 +78,7 @@ public class Table extends JFrame {
                 List<String> file = board.getGameLoader().readFileRows();
                 board = new Board(file, true);
                 boardPanel.redrawBoard();
+                historyPanel.redrawHistory();
                 redrawToolBar();
             }
         });
@@ -313,6 +317,7 @@ public class Table extends JFrame {
                         }
                     }
                     redrawBoard();
+                    historyPanel.redrawHistory();
                 }
             });
             if (board.isLoggingOn()) {
@@ -386,6 +391,34 @@ public class Table extends JFrame {
 
         public JButton[][] getChessBoardSquares() {
             return chessBoardSquares;
+        }
+    }
+
+    private class HistoryPanel extends JPanel {
+        private JTextArea historyTextArea;
+        private JScrollPane scrollPane;
+
+        public HistoryPanel() {
+            setLayout(new BorderLayout());
+            historyTextArea = new JTextArea(board.getHistory().toString());
+            historyTextArea.setSize(200, 800);
+            historyTextArea.setEditable(false);
+            historyTextArea.setLineWrap(true);
+            historyTextArea.setWrapStyleWord(true);
+            scrollPane = new JScrollPane(historyTextArea);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            add(scrollPane, BorderLayout.CENTER);
+        }
+
+        public void updateHistory() {
+            historyTextArea.setText(board.getHistory().toString());
+        }
+
+        public void redrawHistory() {
+            historyTextArea.removeAll();
+            historyTextArea.setText(board.getHistory().toString());
+            historyTextArea.setCaretPosition(historyTextArea.getDocument().getLength());
         }
     }
 }
