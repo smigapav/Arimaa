@@ -199,7 +199,7 @@ public class Board {
 
     private void botPlay() {
         Random random = new Random();
-        int numberOfMoves = random.nextInt(3) + 1;
+        int numberOfMoves = random.nextInt(4) + 1;
 
         if (loggingOn) {
             logger.log(Level.FINE, "Bot is playing");
