@@ -58,7 +58,7 @@ public class Table extends JFrame {
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                board = new Board(true);
+                board = new Board(board.isLoggingOn(), board.isPlayingAgainstBot());
                 boardPanel.redrawBoard();
             }
         });
@@ -76,7 +76,7 @@ public class Table extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<String> file = board.getGameLoader().readFileRows();
-                board = new Board(file, true);
+                board = new Board(file);
                 boardPanel.redrawBoard();
                 historyPanel.redrawHistory();
                 redrawToolBar();
@@ -110,6 +110,8 @@ public class Table extends JFrame {
                 }
                 board.setCanBePulled(new ArrayList<>());
                 board.changeCurrentPlayer();
+                boardPanel.redrawBoard();
+                historyPanel.redrawHistory();
                 redrawToolBar();
             }
         });

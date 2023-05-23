@@ -5,6 +5,7 @@ import cz.cvut.fel.pjv.arimaa.model.figures.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,10 +23,11 @@ public class Board {
     private GameLoader gameLoader = new GameLoader();
     private boolean loggingOn;
     private boolean loadedGame;
+    private boolean isPlayingAgainstBot;
     private static final Logger logger = Logger.getLogger(Board.class.getName());
 
 
-    public Board(boolean logging) {
+    public Board(boolean logging, boolean isPlayingAgainstBot) {
         board = new Figure[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -35,21 +37,22 @@ public class Board {
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
         currentPlayer = goldPlayer;
+        this.isPlayingAgainstBot = isPlayingAgainstBot;
         loadedGame = false;
         loggingOn = logging;
         if (loggingOn) {
             logger.log(Level.INFO, "New game started");
         }
         // Set the logging level to FINE
-        logger.setLevel(Level.INFO);
+        logger.setLevel(Level.FINE);
 
         // Create a console handler to print logging messages to the console
         ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.INFO);
+        consoleHandler.setLevel(Level.FINE);
         logger.addHandler(consoleHandler);
     }
 
-    public Board(List<String> file, boolean logging) {
+    public Board(List<String> file) {
         goldPlayer = new Player(PlayerColor.GOLD, this);
         silverPlayer = new Player(PlayerColor.SILVER, this);
         turnNumber = Integer.parseInt(file.get(0));
@@ -62,6 +65,10 @@ public class Board {
         canBePulled = new ArrayList<>();
         pullPosition = new Coords(-1, -1);
         history = new StringBuilder(file.get(0));
+        file.remove(0);
+        this.isPlayingAgainstBot = Boolean.valueOf(file.get(0));
+        file.remove(0);
+        this.loggingOn = Boolean.valueOf(file.get(0));
         file.remove(0);
         board = new Figure[8][8];
         for (int row = 0; row < 8; row++) {
@@ -93,12 +100,11 @@ public class Board {
                     break;
             }
         }
-        loggingOn = logging;
         if (loggingOn) {
-            logger.log(Level.INFO, "New game started");
+            logger.log(Level.FINE, "New game started");
         }
         // Set the logging level to FINE
-        logger.setLevel(Level.INFO);
+        logger.setLevel(Level.FINE);
 
         // Create a console handler to print log messages to the console
         ConsoleHandler consoleHandler = new ConsoleHandler();
@@ -120,10 +126,6 @@ public class Board {
 
     public Figure[][] getBoard() {
         return board;
-    }
-
-    public Player getGoldPlayer() {
-        return goldPlayer;
     }
 
     public Player getCurrentPlayer() {
@@ -158,6 +160,18 @@ public class Board {
         return loadedGame;
     }
 
+    public boolean isPlayingAgainstBot() {
+        return isPlayingAgainstBot;
+    }
+
+    public Player getGoldPlayer() {
+        return goldPlayer;
+    }
+
+    public Player getSilverPlayer() {
+        return silverPlayer;
+    }
+
     public void changeCurrentPlayer() {
         if (currentPlayer == goldPlayer){
             currentPlayer.resetMovesLeft();
@@ -168,7 +182,6 @@ public class Board {
             turnNumber++;
             currentPlayer = goldPlayer;
         }
-        System.out.println(history);
         history.append("\n");
         history.append(turnNumber);
         if (currentPlayer.getPlayerColor() == PlayerColor.GOLD) {
@@ -176,13 +189,136 @@ public class Board {
         } else {
             history.append("s ");
         }
+        if (isPlayingAgainstBot && currentPlayer.getPlayerColor() == PlayerColor.SILVER) {
+            botPlay();
+        }
         if (loggingOn) {
             logger.log(Level.FINE, "Current player changed to " + currentPlayer.getPlayerColor());
         }
     }
 
-    public Player getSilverPlayer() {
-        return silverPlayer;
+    private void botPlay() {
+        Random random = new Random();
+        int numberOfMoves = random.nextInt(3) + 1;
+
+        if (loggingOn) {
+            logger.log(Level.FINE, "Bot is playing");
+        }
+        if (this.turnNumber == 0) {
+            botPlaceFigures();
+        }
+        // Picks a random figure that can move, and moves it
+        else {
+            int[] nextMove = new int[]{-1, -1};
+            List<Figure> figuresThatCanPush = new ArrayList<>();
+            for (int i = 0; i < numberOfMoves; i++) {
+                // check if nextMove is set, if so, move there a figure from figuresThatCanPush
+                if (nextMove[0] != -1) {
+                    logger.log(Level.FINE, "Bot is pushed a figure, moving to it's former location");
+                    Figure pushFigure = figuresThatCanPush.get(random.nextInt(figuresThatCanPush.size()));
+                    // move there a figure from figuresThatCanPush
+                    pushFigure.move(nextMove[0], nextMove[1]);
+                    nextMove = new int[]{-1, -1};
+                    figuresThatCanPush = new ArrayList<>();
+                }
+                else if ((numberOfMoves - i) >= 1) {
+                    logger.log(Level.FINE, "More than 1 move left");
+                    List<Figure> availableMoves = new ArrayList<>();
+                    List<Figure> availableFriendlyPieces = silverPlayer.getAvailableFriendlyPieces();
+                    List<Figure> availableEnemyPieces = silverPlayer.getAvailableEnemyPieces();
+                    availableMoves.addAll(canBePulled);
+                    for (Figure figure : availableFriendlyPieces) {
+                        if (getViableMoves(figure).size() > 0) {
+                            availableMoves.add(figure);
+                        }
+                    }
+                    for (Figure figure : availableEnemyPieces) {
+                        if (getViableMoves(figure).size() > 0) {
+                            availableMoves.add(figure);
+                        }
+                    }
+                    // get a random figure that can move
+                    Figure selectedFigure = availableMoves.get(random.nextInt(availableMoves.size() - 1));
+                    // if the figure is an enemy figure, push it
+                    if (silverPlayer.getAvailableEnemyPieces().contains(selectedFigure)) {
+                        nextMove = new int[]{selectedFigure.getRow(), selectedFigure.getCol()};
+                        for (Figure fig : selectedFigure.getAdjacentTiles()) {
+                            if (fig != null && fig.getFigureColor() == PlayerColor.SILVER && fig.isStronger(selectedFigure)) {
+                                figuresThatCanPush.add(fig);
+                                logger.log(Level.FINE, "Bot chose enemy figure");
+                            }
+                        }
+                    }
+                    // add all viable moves into a list
+                    List<int[]> viableMoves = getViableMoves(selectedFigure);
+                    // get a random viable move
+                    int[] randomMove = viableMoves.get(random.nextInt(viableMoves.size()));
+                    // move the figure to random free position adjacent to it and
+                    selectedFigure.move(randomMove[0], randomMove[1]);
+                } else {
+                    logger.log(Level.FINE, "Only 1 move left");
+                    List<Figure> availableMoves = new ArrayList<>();
+                    List<Figure> availableFriendlyPieces = silverPlayer.getAvailableFriendlyPieces();
+                    for (Figure figure : availableFriendlyPieces) {
+                        if (getViableMoves(figure).size() > 0) {
+                            availableMoves.add(figure);
+                        }
+                    }
+                    // get a random figure that can move
+                    Figure selectedFigure = availableMoves.get(random.nextInt(availableMoves.size() - 1));
+                    // add all viable moves into a list
+                    List<int[]> viableMoves = getViableMoves(selectedFigure);
+                    // get a random viable move
+                    int[] randomMove = viableMoves.get(random.nextInt(viableMoves.size()));
+                    selectedFigure.move(randomMove[0], randomMove[1]);
+                    logger.log(Level.FINE, "Bot is moving a figure");
+                }
+            }
+        }
+        this.changeCurrentPlayer();
+    }
+
+    private List<int[]> getViableMoves(Figure selectedFigure) {
+        List<int[]> viableMoves = new ArrayList<>();
+        for (int j = 0; j < 4; j++) {
+            switch (j) {
+                case 0 -> {
+                    if (selectedFigure.getRow() + 1 <= 7 && board[selectedFigure.getRow() + 1][selectedFigure.getCol()] == null) {
+                        viableMoves.add(new int[]{selectedFigure.getRow() + 1, selectedFigure.getCol()});
+                    }
+                }
+                case 1 -> {
+                    if (selectedFigure.getRow() - 1 >= 0 && board[selectedFigure.getRow() - 1][selectedFigure.getCol()] == null) {
+                        viableMoves.add(new int[]{selectedFigure.getRow() - 1, selectedFigure.getCol()});
+                    }
+                }
+                case 2 -> {
+                    if (selectedFigure.getCol() + 1 <= 7 && board[selectedFigure.getRow()][selectedFigure.getCol() + 1] == null) {
+                        viableMoves.add(new int[]{selectedFigure.getRow(), selectedFigure.getCol() + 1});
+                    }
+                }
+                case 3 -> {
+                    if (selectedFigure.getCol() - 1 >= 0 && board[selectedFigure.getRow()][selectedFigure.getCol() - 1] == null) {
+                        viableMoves.add(new int[]{selectedFigure.getRow(), selectedFigure.getCol() - 1});
+                    }
+                }
+            }
+        }
+        return viableMoves;
+    }
+
+    private void botPlaceFigures() {
+        silverPlayer.placeFigure(6, 3);
+        silverPlayer.placeFigure(6, 4);
+        silverPlayer.placeFigure(6, 2);
+        silverPlayer.placeFigure(6, 5);
+        silverPlayer.placeFigure(6, 1);
+        silverPlayer.placeFigure(6, 6);
+        silverPlayer.placeFigure(6, 0);
+        silverPlayer.placeFigure(6, 7);
+        for (int i = 0; i < 8; i++) {
+            silverPlayer.placeFigure(7, i);
+        }
     }
 
     public PlayerColor getWinner(){
@@ -355,6 +491,10 @@ public class Board {
                 writer.write(board.getCurrentPlayer().getPlayerColor().toString());
                 writer.newLine();
                 writer.write(String.valueOf(board.getCurrentPlayer().getMovesLeft()));
+                writer.newLine();
+                writer.write(String.valueOf(board.isPlayingAgainstBot()));
+                writer.newLine();
+                writer.write(String.valueOf(board.loggingOn));
                 writer.newLine();
                 for (int row = 0; row < 8; row++) {
                     for (int col = 0; col < 8; col++) {
