@@ -67,6 +67,9 @@ public abstract class Figure {
         return board;
     }
 
+    /**
+     * @return List of all adjacent tiles for this figure
+     */
     // returns all tiles adjacent to this one
     public List<Figure> getAdjacentTiles() {
         List<Figure> out = new ArrayList<>();
@@ -86,6 +89,9 @@ public abstract class Figure {
         return out;
     }
 
+    /**
+     * @return List of all adjacent figures for this figure
+     */
     // returns all figures on adjacent tiles from this one
     public List<Figure> getAdjacentFigures() {
         List<Figure> out = new ArrayList<>();
@@ -103,6 +109,10 @@ public abstract class Figure {
         return out;
     }
 
+    /**
+     * @return true if the figure on input is the same color as this one
+     * @param figure - figure to be checked
+     */
     // Checks if the figure on input is the same color as this one
     public boolean isFigureSameColor(Figure figure) {
         if (this.board.isLoggingOn()) {
@@ -115,6 +125,9 @@ public abstract class Figure {
         }
     }
 
+    /**
+     * @return List of all adjacent enemy figures for this figure
+     */
     // Returns only adjacent figures that aren't the same color as this one
     public List<Figure> getAdjacentEnemyFigures() {
         List<Figure> out = new ArrayList<>();
@@ -132,6 +145,9 @@ public abstract class Figure {
         return out;
     }
 
+    /**
+     * @return List of all adjacent friendly figures for this figure
+     */
     // Returns only adjacent figures that are the same color as this one
     public List<Figure> getAdjacentFriendlyFigures() {
         List<Figure> out = new ArrayList<>();
@@ -149,6 +165,9 @@ public abstract class Figure {
         return out;
     }
 
+    /**
+     * Changes the pool of figures that can be pulled
+     */
     // After each move, the pull pool is updated
     public void alterPullPool(){
         List<Figure> out = new ArrayList<>();
@@ -173,6 +192,9 @@ public abstract class Figure {
         board.setCanBePulled(out);
     }
 
+    /**
+     * @return true if this figure can be pulled
+     */
     public boolean canBePushed(){
         List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
         if (this.board.isLoggingOn()) {
@@ -186,12 +208,18 @@ public abstract class Figure {
         return false;
     }
 
+    /**
+     * @return true if this figure is stronger than the input one
+     * @param figure - figure to be checked
+     */
     // Checks if this figure is stronger than the input one
     public boolean isStronger(Figure figure){
         return this.strength > figure.strength;
     }
 
-
+    /**
+     * Checks if this figure is frozen
+     */
     // Checks if this figure is frozen
     public void checkIfFrozen(){
         List<Figure> adjacentEnemyFigures = getAdjacentEnemyFigures();
@@ -216,6 +244,12 @@ public abstract class Figure {
     }
 
 
+    /**
+     * Moves figure to the new position
+     * @param row - new row
+     * @param col - new column
+     * @return true if this figure was moved
+     */
     public boolean move(int row, int col){
         if (this.board.isLoggingOn()) {
             this.board.getLogger().log(Level.FINE, "Moving " + this.toString() + " at " + this.getRow() + " " + this.getCol() + " to " + row + " " + col);
@@ -325,6 +359,12 @@ public abstract class Figure {
         this.board.getHistory().append(death);
     }
 
+    /**
+     * Forces the move to the new position
+     * @param row - row of new position
+     * @param col - col of new position
+     * @return true if figure was moved, false if not
+     */
     public boolean forceMove(int row, int col){
         if (this.board.isLoggingOn()) {
             this.board.getLogger().log(Level.FINE, "Force moving " + this.toString() + " at " + this.getRow() + " " + this.getCol() + " to " + row + " " + col);

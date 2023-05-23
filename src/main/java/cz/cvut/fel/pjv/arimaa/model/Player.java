@@ -58,6 +58,10 @@ public class Player {
         this.movesLeft = movesLeft;
     }
 
+    /**
+     * Get all available friendly pieces that are not frozen
+     * @return ArrayList of Figures
+     */
     public ArrayList<Figure> getAvailableFriendlyPieces(){
         ArrayList<Figure> figures = new ArrayList<>();
         if (board.isLoggingOn()){
@@ -77,6 +81,10 @@ public class Player {
         return figures;
     }
 
+    /**
+     * Get all available enemy pieces that can be pushed
+     * @return ArrayList of Figures
+     */
     public ArrayList<Figure> getAvailableEnemyPieces(){
         ArrayList<Figure> figures = new ArrayList<>();
         if (board.isLoggingOn()){
@@ -96,6 +104,11 @@ public class Player {
         return figures;
     }
 
+    /**
+     * Places a figure on the board
+     * @param row row to place the figure
+     * @param col column to place the figure
+     */
     public void placeFigure(int row, int col){
         if (board.isLoggingOn()){
             board.getLogger().log(Level.FINER, "Placing figure at " + row + " " + col);

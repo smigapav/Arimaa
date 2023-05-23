@@ -172,6 +172,12 @@ public class Board {
         return silverPlayer;
     }
 
+    /**
+     * Places a rabbit on the board
+     * row of the board
+     * column of the board
+     * color of the player
+     */
     public void changeCurrentPlayer() {
         if (currentPlayer == goldPlayer){
             currentPlayer.resetMovesLeft();
@@ -197,6 +203,10 @@ public class Board {
         }
     }
 
+    /**
+     * Bot plays a random move
+     * if the user is playing against the bot
+     */
     private void botPlay() {
         Random random = new Random();
         int numberOfMoves = random.nextInt(4) + 1;
@@ -278,6 +288,11 @@ public class Board {
         this.changeCurrentPlayer();
     }
 
+    /**
+     * Returns a list of all viable moves for a figure
+     * @param selectedFigure the figure that is being moved
+     * @return a list of all viable moves for a figure
+     */
     private List<int[]> getViableMoves(Figure selectedFigure) {
         List<int[]> viableMoves = new ArrayList<>();
         for (int j = 0; j < 4; j++) {
@@ -307,6 +322,9 @@ public class Board {
         return viableMoves;
     }
 
+    /**
+     * Places the figures for the bot
+     */
     private void botPlaceFigures() {
         silverPlayer.placeFigure(6, 3);
         silverPlayer.placeFigure(6, 4);
@@ -321,6 +339,10 @@ public class Board {
         }
     }
 
+    /**
+     * Checks if the game is over
+     * @return the winner of the game
+     */
     public PlayerColor getWinner(){
         int goldenRabbits = 0;
         int silverRabbits = 0;
@@ -381,6 +403,10 @@ public class Board {
         this.canBePulled = canBePulled;
     }
 
+    /**
+     * Check the traps on the board
+     * If a trap is triggered, the figure on the trap is removed from the board
+     */
     public void checkTraps(){
         Figure[] tiles = {board[2][2], board[2][5], board[5][2], board[5][5]};
         if (loggingOn) {
@@ -397,6 +423,9 @@ public class Board {
         }
     }
 
+    /**
+     * Checks all figures on the board if they are frozen
+     */
     // Updates isFrozen for all figures on the board
     public void checkIfFrozenForAllTiles(){
         if (loggingOn) {
@@ -415,6 +444,10 @@ public class Board {
         }
     }
 
+    /**
+     * Places an elephant on the board
+     * @return true if the elephant was placed, false if not
+     */
     public boolean placeElephant(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Elephant(playerColor, this, row, col);
@@ -426,6 +459,10 @@ public class Board {
         return false;
     }
 
+    /**
+     * Places an elephant on the board
+     * @return true if the camel was placed, false if not
+     */
     public boolean placeCamel(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Camel(playerColor, this, row, col);
@@ -437,6 +474,10 @@ public class Board {
         return false;
     }
 
+    /**
+     * Places an elephant on the board
+     * @return true if the horse was placed, false if not
+     */
     public boolean placeHorse(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Horse(playerColor, this, row, col);
@@ -448,6 +489,10 @@ public class Board {
         return false;
     }
 
+    /**
+     * Places an elephant on the board
+     * @return true if the dog was placed, false if not
+     */
     public boolean placeDog(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Dog(playerColor, this, row, col);
@@ -459,6 +504,10 @@ public class Board {
         return false;
     }
 
+    /**
+     * Places an elephant on the board
+     * @return true if the cat was placed, false if not
+     */
     public boolean placeCat(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Cat(playerColor, this, row, col);
@@ -470,6 +519,10 @@ public class Board {
         return false;
     }
 
+    /**
+     * Places an elephant on the board
+     * @return true if the rabbit was placed, false if not
+     */
     public boolean placeRabbit(int col, int row, PlayerColor playerColor){
         if (board[row][col] == null){
             board[row][col] = new Rabbit(playerColor, this, row, col);
