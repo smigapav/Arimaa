@@ -6,6 +6,7 @@ import cz.cvut.fel.pjv.arimaa.model.PlayerColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public abstract class Figure {
@@ -352,5 +353,17 @@ public abstract class Figure {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Figure figure)) return false;
+        return getStrength() == figure.getStrength() && isFrozen == figure.isFrozen && getRow() == figure.getRow() && getCol() == figure.getCol() && figurePlayerColor == figure.figurePlayerColor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(figurePlayerColor, getStrength(), isFrozen, getRow(), getCol());
     }
 }
