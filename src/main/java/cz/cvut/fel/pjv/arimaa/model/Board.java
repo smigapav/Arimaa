@@ -481,7 +481,7 @@ public class Board {
         return false;
     }
 
-    public class GameSaver {
+    public static class GameSaver {
         private static final String FILE_PATH = "src/main/resources/saveFile.txt";
 
         public static void saveGame(Board board) {
@@ -522,7 +522,7 @@ public class Board {
         }
     }
 
-    public class GameLoader {
+    public static class GameLoader {
         private static final String FILE_PATH = "src/main/resources/saveFile.txt";
 
         public static List<String> readFileRows() {
