@@ -1,5 +1,5 @@
 package cz.cvut.fel.pjv.arimaa.model;
 
-public enum Color {
+public enum PlayerColor {
     GOLD, SILVER
 }
